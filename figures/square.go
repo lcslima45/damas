@@ -27,6 +27,6 @@ func (s *Square) SetColor(c color.Color) {
 func (s *Square) Draw() fyne.CanvasObject {
 	square := canvas.NewRectangle(s.color)
 
-	square.SetMinSize(fyne.NewSize(float32(s.size), float32(s.size)))
+	square.Resize(fyne.NewSize(float32(s.size), float32(s.size)))
 	return square
 }
