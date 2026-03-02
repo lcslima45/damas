@@ -8,7 +8,7 @@ import (
 )
 
 type Square struct {
-	size  int
+	size  float32
 	color color.Color
 }
 
@@ -16,7 +16,7 @@ func NewSquare() Figure {
 	return &Square{}
 }
 
-func (s *Square) SetSize(size int) {
+func (s *Square) SetSize(size float32) {
 	s.size = size
 }
 

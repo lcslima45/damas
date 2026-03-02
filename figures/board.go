@@ -8,7 +8,7 @@ import (
 
 type Board struct {
 	dim  int
-	size int
+	size float32
 }
 
 func NewBoard() *Board {
@@ -21,6 +21,7 @@ func NewBoard() *Board {
 func (b *Board) Draw() *fyne.Container {
 	var objects []fyne.CanvasObject
 
+	//Draw squares for cells in board
 	for row := 0; row < b.dim; row++ {
 		for col := 0; col < b.dim; col++ {
 			sq := NewSquare()
@@ -32,16 +33,49 @@ func (b *Board) Draw() *fyne.Container {
 				sq.SetColor(colors.ColorBlack)
 			}
 
-			obj := sq.Draw()
+			cell := sq.Draw()
 
-			obj.Move(fyne.NewPos(
-				float32(col*b.size),
-				float32(row*b.size),
+			cell.Move(fyne.NewPos(
+				float32(col)*b.size,
+				float32(row)*b.size,
 			))
 
-			objects = append(objects, obj)
+			objects = append(objects, cell)
 		}
 	}
 
+	//draw circles for pieces inside cells of board
+	for row := 0; row < b.dim; row++ {
+		if row >= 3 && row < 5 {
+			continue
+		}
+		for col := 0; col < b.dim; col++ {
+			circle := NewCircle()
+			circle.SetSize(0.8 * b.size)
+			if row <= 2 && (row+col)%2 != 0 {
+				circle.SetColor(colors.ColorBlue)
+			} else if row >= 5 && (row+col)%2 != 0 {
+				circle.SetColor(colors.ColorBrown)
+			} else {
+				continue
+			}
+
+			piece := circle.Draw()
+
+			posPiece := b.CalcPositionPiece(row, col)
+			piece.Move(posPiece)
+			objects = append(objects, piece)
+		}
+	}
 	return container.NewWithoutLayout(objects...)
+}
+
+func (b *Board) CalcPositionPiece(row, col int) fyne.Position {
+	pieceSize := 0.8 * b.size
+	offset := (b.size - pieceSize) / 2
+
+	x := float32(col)*b.size + offset
+	y := float32(row)*b.size + offset
+
+	return fyne.NewPos(x, y)
 }

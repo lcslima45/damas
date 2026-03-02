@@ -7,7 +7,7 @@ import (
 )
 
 type Figure interface {
-	SetSize(size int)
+	SetSize(size float32)
 	SetColor(c color.Color)
 	Draw() fyne.CanvasObject
 }
