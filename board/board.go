@@ -1,9 +1,11 @@
-package figures
+package board
 
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"github.com/lcslima45/damas/colors"
+	"github.com/lcslima45/damas/figures"
+	"github.com/lcslima45/damas/pieces"
 )
 
 type Board struct {
@@ -24,7 +26,7 @@ func (b *Board) Draw() *fyne.Container {
 	//Draw squares for cells in board
 	for row := 0; row < b.dim; row++ {
 		for col := 0; col < b.dim; col++ {
-			sq := NewSquare()
+			sq := figures.NewSquare()
 			sq.SetSize(b.size)
 
 			if (row+col)%2 == 0 {
@@ -50,20 +52,21 @@ func (b *Board) Draw() *fyne.Container {
 			continue
 		}
 		for col := 0; col < b.dim; col++ {
-			circle := NewCircle()
-			circle.SetSize(0.8 * b.size)
-			if row <= 2 && (row+col)%2 != 0 {
-				circle.SetColor(colors.ColorBlue)
-			} else if row >= 5 && (row+col)%2 != 0 {
-				circle.SetColor(colors.ColorBrown)
-			} else {
+			if (row+col)%2 == 0 {
 				continue
 			}
 
-			piece := circle.Draw()
+			var piece *pieces.Piece
+
+			if row <= 2 {
+				piece = pieces.NewPiece(0.8*b.size, colors.ColorBlue)
+			} else if row >= 5 {
+				piece = pieces.NewPiece(0.8*b.size, colors.ColorBrown)
+			}
 
 			posPiece := b.CalcPositionPiece(row, col)
 			piece.Move(posPiece)
+
 			objects = append(objects, piece)
 		}
 	}

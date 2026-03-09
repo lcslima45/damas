@@ -8,25 +8,32 @@ import (
 )
 
 type Circle struct {
-	size  float32
-	color color.Color
+	size   float32
+	color  color.Color
+	object *canvas.Circle
 }
 
-func NewCircle() Figure {
-	return &Circle{}
+func NewCircle() *Circle {
+	return &Circle{
+		object: canvas.NewCircle(color.Transparent),
+	}
 }
 
 func (c *Circle) SetSize(size float32) {
 	c.size = size
+	c.object.Resize(fyne.NewSize(size, size))
 }
 
 func (c *Circle) SetColor(color color.Color) {
 	c.color = color
+	c.object.FillColor = color
+	c.object.Refresh()
+}
+
+func (c *Circle) GetColor() color.Color {
+	return c.color
 }
 
 func (c *Circle) Draw() fyne.CanvasObject {
-	circle := canvas.NewCircle(c.color)
-
-	circle.Resize(fyne.NewSize(c.size, c.size))
-	return circle
+	return c.object
 }
