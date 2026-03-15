@@ -19,6 +19,11 @@ const (
 	Brown
 )
 
+type Position struct {
+	Row    int
+	Column int
+}
+
 func NewBoard() *BoardLogic {
 	b := &BoardLogic{}
 	for row := 0; row < 8; row++ {
@@ -44,4 +49,62 @@ func NewBoard() *BoardLogic {
 		}
 	}
 	return b
+}
+
+func (b *BoardLogic) PreviewPositions(row, column int) []Position {
+	if row >= 0 && row <= 7 && column >= 0 && column <= 7 {
+		if b.Pieces[row][column] == Blue {
+			if column >= 1 && column <= 6 {
+				Pos1 := Position{
+					Row:    row + 1,
+					Column: column + 1,
+				}
+				Pos2 := Position{
+					Row:    row + 1,
+					Column: column - 1,
+				}
+				return []Position{Pos1, Pos2}
+			} else if column == 0 {
+				Pos1 := Position{
+					Row:    row + 1,
+					Column: column + 1,
+				}
+				return []Position{Pos1}
+			} else if column == 7 {
+				Pos1 := Position{
+					Row:    row + 1,
+					Column: column - 1,
+				}
+				return []Position{Pos1}
+			}
+		}
+
+		if b.Pieces[row][column] == Brown {
+			if column >= 1 && column <= 6 {
+				Pos1 := Position{
+					Row:    row - 1,
+					Column: column + 1,
+				}
+				Pos2 := Position{
+					Row:    row - 1,
+					Column: column - 1,
+				}
+				return []Position{Pos1, Pos2}
+			} else if column == 0 {
+				Pos1 := Position{
+					Row:    row - 1,
+					Column: column + 1,
+				}
+				return []Position{Pos1}
+			} else if column == 7 {
+				Pos1 := Position{
+					Row:    row - 1,
+					Column: column - 1,
+				}
+
+				return []Position{Pos1}
+			}
+		}
+	}
+	return nil
 }

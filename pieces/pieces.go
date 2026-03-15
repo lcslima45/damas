@@ -11,9 +11,10 @@ import (
 
 type Piece struct {
 	widget.BaseWidget
-	Circle    *figures.Circle
-	posRow    int
-	posColumn int
+	Circle        *figures.Circle
+	Row           int
+	Column        int
+	OnMoveRequest func(row, col int)
 }
 
 func NewPiece(size float32, col color.Color) *Piece {
@@ -39,12 +40,12 @@ func (p *Piece) Tapped(*fyne.PointEvent) {
 	switch p.Circle.GetColor() {
 	case colors.ColorBlue:
 		p.Circle.SetColor(colors.ColorGreen)
-		// p.CalcNewPostion()
+		p.CalcNewPostion()
 	case colors.ColorGreen:
 		p.Circle.SetColor(colors.ColorBlue)
 	case colors.ColorBrown:
 		p.Circle.SetColor(colors.ColorRed)
-		// p.CalcNewPostion()
+		p.CalcNewPostion()
 	case colors.ColorRed:
 		p.Circle.SetColor(colors.ColorBrown)
 	}
@@ -53,5 +54,7 @@ func (p *Piece) Tapped(*fyne.PointEvent) {
 }
 
 func (p *Piece) CalcNewPostion() {
-
+	if p.OnMoveRequest != nil {
+		p.OnMoveRequest(p.Row, p.Column)
+	}
 }

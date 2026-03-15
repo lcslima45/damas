@@ -10,8 +10,9 @@ import (
 )
 
 type Board struct {
-	bLogic *logic.BoardLogic
-	size   float32
+	bLogic  *logic.BoardLogic
+	squares [8][8]*figures.Square
+	size    float32
 }
 
 func NewBoard() *Board {
@@ -37,6 +38,7 @@ func (b *Board) DrawSquares() []fyne.CanvasObject {
 				float32(column)*b.size,
 				float32(row)*b.size,
 			))
+			b.squares[row][column] = sq
 			objects = append(objects, cell)
 		}
 	}
@@ -50,11 +52,17 @@ func (b *Board) DrawPieces() []fyne.CanvasObject {
 			switch b.bLogic.Pieces[row][column] {
 			case logic.Blue:
 				piece := pieces.NewPiece(0.8*b.size, colors.ColorBlue)
+				piece.Row = row
+				piece.Column = column
+				piece.OnMoveRequest = b.OnPieceMoveRequest
 				posPiece := b.CalcPositionPiece(row, column)
 				piece.Move(posPiece)
 				objects = append(objects, piece)
 			case logic.Brown:
 				piece := pieces.NewPiece(0.8*b.size, colors.ColorBrown)
+				piece.Row = row
+				piece.Column = column
+				piece.OnMoveRequest = b.OnPieceMoveRequest
 				posPiece := b.CalcPositionPiece(row, column)
 				piece.Move(posPiece)
 				objects = append(objects, piece)
@@ -79,4 +87,11 @@ func (b *Board) CalcPositionPiece(row, col int) fyne.Position {
 	y := float32(row)*b.size + offset
 
 	return fyne.NewPos(x, y)
+}
+
+func (b *Board) OnPieceMoveRequest(row, col int) {
+	previews := b.bLogic.PreviewPositions(row, col)
+	for _, p := range previews {
+		b.squares[p.Row][p.Column].SetColor(colors.ColorBlackSelected)
+	}
 }
