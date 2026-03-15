@@ -11,7 +11,9 @@ import (
 
 type Piece struct {
 	widget.BaseWidget
-	Circle *figures.Circle
+	Circle    *figures.Circle
+	posRow    int
+	posColumn int
 }
 
 func NewPiece(size float32, col color.Color) *Piece {
@@ -37,13 +39,19 @@ func (p *Piece) Tapped(*fyne.PointEvent) {
 	switch p.Circle.GetColor() {
 	case colors.ColorBlue:
 		p.Circle.SetColor(colors.ColorGreen)
+		// p.CalcNewPostion()
 	case colors.ColorGreen:
 		p.Circle.SetColor(colors.ColorBlue)
 	case colors.ColorBrown:
 		p.Circle.SetColor(colors.ColorRed)
+		// p.CalcNewPostion()
 	case colors.ColorRed:
 		p.Circle.SetColor(colors.ColorBrown)
 	}
 
 	p.Refresh()
+}
+
+func (p *Piece) CalcNewPostion() {
+
 }

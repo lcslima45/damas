@@ -5,72 +5,70 @@ import (
 	"fyne.io/fyne/v2/container"
 	"github.com/lcslima45/damas/colors"
 	"github.com/lcslima45/damas/figures"
+	"github.com/lcslima45/damas/logic"
 	"github.com/lcslima45/damas/pieces"
 )
 
 type Board struct {
-	dim  int
-	size float32
+	bLogic *logic.BoardLogic
+	size   float32
 }
 
 func NewBoard() *Board {
 	return &Board{
-		dim:  8,
-		size: 80,
+		bLogic: logic.NewBoard(),
+		size:   80,
 	}
 }
 
-func (b *Board) Draw() *fyne.Container {
+func (b *Board) DrawSquares() []fyne.CanvasObject {
 	var objects []fyne.CanvasObject
-
-	//Draw squares for cells in board
-	for row := 0; row < b.dim; row++ {
-		for col := 0; col < b.dim; col++ {
+	for row := 0; row < len(b.bLogic.Grid); row++ {
+		for column := 0; column < len(b.bLogic.Grid[0]); column++ {
 			sq := figures.NewSquare()
 			sq.SetSize(b.size)
-
-			if (row+col)%2 == 0 {
-				sq.SetColor(colors.ColorOrange)
-			} else {
+			if b.bLogic.Grid[row][column] == logic.Black {
 				sq.SetColor(colors.ColorBlack)
+			} else {
+				sq.SetColor(colors.ColorOrange)
 			}
-
 			cell := sq.Draw()
-
 			cell.Move(fyne.NewPos(
-				float32(col)*b.size,
+				float32(column)*b.size,
 				float32(row)*b.size,
 			))
-
 			objects = append(objects, cell)
 		}
 	}
+	return objects
+}
 
-	//draw circles for pieces inside cells of board
-	for row := 0; row < b.dim; row++ {
-		if row >= 3 && row < 5 {
-			continue
-		}
-		for col := 0; col < b.dim; col++ {
-			if (row+col)%2 == 0 {
-				continue
+func (b *Board) DrawPieces() []fyne.CanvasObject {
+	var objects []fyne.CanvasObject
+	for row := 0; row < len(b.bLogic.Pieces); row++ {
+		for column := 0; column < len(b.bLogic.Pieces[0]); column++ {
+			switch b.bLogic.Pieces[row][column] {
+			case logic.Blue:
+				piece := pieces.NewPiece(0.8*b.size, colors.ColorBlue)
+				posPiece := b.CalcPositionPiece(row, column)
+				piece.Move(posPiece)
+				objects = append(objects, piece)
+			case logic.Brown:
+				piece := pieces.NewPiece(0.8*b.size, colors.ColorBrown)
+				posPiece := b.CalcPositionPiece(row, column)
+				piece.Move(posPiece)
+				objects = append(objects, piece)
 			}
-
-			var piece *pieces.Piece
-
-			if row <= 2 {
-				piece = pieces.NewPiece(0.8*b.size, colors.ColorBlue)
-			} else if row >= 5 {
-				piece = pieces.NewPiece(0.8*b.size, colors.ColorBrown)
-			}
-
-			posPiece := b.CalcPositionPiece(row, col)
-			piece.Move(posPiece)
-
-			objects = append(objects, piece)
 		}
 	}
-	return container.NewWithoutLayout(objects...)
+	return objects
+}
+
+func (b *Board) Draw() *fyne.Container {
+	sqObj := b.DrawSquares()
+	piObj := b.DrawPieces()
+	allObj := append(sqObj, piObj...)
+	return container.NewWithoutLayout(allObj...)
 }
 
 func (b *Board) CalcPositionPiece(row, col int) fyne.Position {
